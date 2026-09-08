@@ -2,6 +2,8 @@ import './style.css'
 import Phaser from 'phaser'
 import MenuScene from './game/scenes/MenuScene.js'
 import Level1Scene from './game/scenes/Level1Scene.js'
+import Level2Scene from './game/scenes/Level2Scene.js'
+import Level3Scene from './game/scenes/Level3Scene.js'
 
 const config = {
   type: Phaser.AUTO,
@@ -20,7 +22,7 @@ const config = {
       debug: false,
     },
   },
-  scene: [MenuScene, Level1Scene],
+  scene: [MenuScene, Level1Scene, Level2Scene, Level3Scene],
 }
 
 new Phaser.Game(config)
