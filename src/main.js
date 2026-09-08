@@ -6,7 +6,7 @@ import Level1Scene from './game/scenes/Level1Scene.js'
 const config = {
   type: Phaser.AUTO,
   parent: 'app',
-  width: 640,
+  width: 840,
   height: 960,
   backgroundColor: '#16171d',
   scale: {
@@ -16,7 +16,7 @@ const config = {
   physics: {
     default: 'arcade',
     arcade: {
-      gravity: { x: 0, y: 0 },
+      gravity: { x: 0, y: 900 },
       debug: false,
     },
   },

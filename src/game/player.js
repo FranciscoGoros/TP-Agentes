@@ -1,6 +1,7 @@
 import Phaser from 'phaser'
 
-const SPEED = 220
+const SPEED = 390
+const JUMP_VELOCITY = -550
 const SIZE = 32
 
 export default class Player extends Phaser.GameObjects.Rectangle {
@@ -19,6 +20,11 @@ export default class Player extends Phaser.GameObjects.Rectangle {
       this.body.setVelocityX(-SPEED)
     } else if (cursors.right.isDown) {
       this.body.setVelocityX(SPEED)
+    }
+
+    const grounded = this.body.blocked.down || this.body.touching.down
+    if (grounded && Phaser.Input.Keyboard.JustDown(cursors.space)) {
+      this.body.setVelocityY(JUMP_VELOCITY)
     }
   }
 }
