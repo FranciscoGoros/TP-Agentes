@@ -1,6 +1,7 @@
 import './style.css'
 import Phaser from 'phaser'
 import MenuScene from './game/scenes/MenuScene.js'
+import Level1Scene from './game/scenes/Level1Scene.js'
 
 const config = {
   type: Phaser.AUTO,
@@ -12,7 +13,14 @@ const config = {
     mode: Phaser.Scale.FIT,
     autoCenter: Phaser.Scale.CENTER_BOTH,
   },
-  scene: [MenuScene],
+  physics: {
+    default: 'arcade',
+    arcade: {
+      gravity: { x: 0, y: 0 },
+      debug: false,
+    },
+  },
+  scene: [MenuScene, Level1Scene],
 }
 
 new Phaser.Game(config)

@@ -46,6 +46,6 @@ export default class MenuScene extends Phaser.Scene {
   }
 
   onPlay() {
-    console.log('JUGAR -> próximo: escena de niveles')
+    this.scene.start('Level1')
   }
 }
