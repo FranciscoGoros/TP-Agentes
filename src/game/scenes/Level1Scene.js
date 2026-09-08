@@ -1,5 +1,6 @@
 import Phaser from 'phaser'
 import Player from '../player.js'
+import Box from '../box.js'
 
 const PLATFORM_HEIGHT = 32
 
@@ -27,9 +28,12 @@ export default class Level1Scene extends Phaser.Scene {
     this.buildPlatform(FLOOR.x, FLOOR.y, FLOOR.w, 0x27272a, 0x3f3f46)
 
     this.player = new Player(this, 125, 284)
+    this.box = new Box(this, 60, 380)
     this.cursors = this.input.keyboard.createCursorKeys()
 
     this.physics.add.collider(this.player, this.platforms)
+    this.physics.add.collider(this.box, this.platforms)
+    this.physics.add.collider(this.player, this.box)
   }
 
   buildPlatform(x, y, w, fillColor, strokeColor) {
@@ -41,5 +45,6 @@ export default class Level1Scene extends Phaser.Scene {
 
   update() {
     this.player.update(this.cursors)
+    this.box.update(this.player, this.scale.width)
   }
 }
