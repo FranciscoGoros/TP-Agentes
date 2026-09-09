@@ -1,4 +1,5 @@
 import Phaser from 'phaser'
+import timer from '../timer.js'
 
 export default class MenuScene extends Phaser.Scene {
   constructor() {
@@ -46,6 +47,7 @@ export default class MenuScene extends Phaser.Scene {
   }
 
   onPlay() {
+    timer.resetAll()
     this.scene.start('Level1')
   }
 }

@@ -1,4 +1,5 @@
 import Phaser from 'phaser'
+import timer from '../timer.js'
 
 export default class GameOverScene extends Phaser.Scene {
   constructor() {
@@ -13,6 +14,7 @@ export default class GameOverScene extends Phaser.Scene {
     this.cameras.main.setBackgroundColor(0x2b1515)
 
     const { width, height } = this.scale
+    const levelTime = timer.levelElapsed()
 
     this.add
       .text(width / 2, height * 0.28, 'GAME OVER', {
@@ -27,6 +29,14 @@ export default class GameOverScene extends Phaser.Scene {
 
     restart.on('pointerup', () => this.scene.start(this.level))
     menu.on('pointerup', () => this.scene.start('Menu'))
+
+    this.add
+      .text(width / 2, height * 0.5 + 185, `TIEMPO: ${timer.format(levelTime)}`, {
+        fontFamily: 'monospace',
+        fontSize: '20px',
+        color: '#fbbf24',
+      })
+      .setOrigin(0.5)
   }
 
   buildButton(x, y, label) {

@@ -1,7 +1,9 @@
 import Phaser from 'phaser'
 import Player from '../player.js'
-import Box from '../box.js'
+import Box, { resolveBoxPushing } from '../box.js'
 import DoorSystem from '../door.js'
+import timer from '../timer.js'
+import addRestartButton from '../hud.js'
 
 const PLATFORM_HEIGHT = 32
 
@@ -28,6 +30,15 @@ export default class Level1Scene extends Phaser.Scene {
 
   create() {
     this.cameras.main.setBackgroundColor(0x1b1b22)
+    timer.startLevel('Level1')
+    this.timerText = this.add
+      .text(this.scale.width - 12, 12, '', {
+        fontFamily: 'monospace',
+        fontSize: '18px',
+        color: '#efdffc',
+      })
+      .setOrigin(1, 0)
+    addRestartButton(this)
 
     this.platforms = []
     for (const { x, y, w } of LEDGES) {
@@ -42,6 +53,7 @@ export default class Level1Scene extends Phaser.Scene {
     this.physics.add.collider(this.player, this.platforms)
     this.physics.add.collider(this.boxes, this.platforms)
     this.physics.add.collider(this.player, this.boxes)
+    this.physics.add.collider(this.boxes, this.boxes)
 
     this.door = new DoorSystem(this, {
       boxes: this.boxes,
@@ -59,8 +71,10 @@ export default class Level1Scene extends Phaser.Scene {
   }
 
   update() {
+    this.timerText.setText(timer.format(timer.levelElapsed()))
     this.player.update(this.cursors)
     this.boxes.forEach((box) => box.update(this.player, this.scale.width))
+    resolveBoxPushing(this.boxes)
     this.door.update(this.player)
   }
 }

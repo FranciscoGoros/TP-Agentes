@@ -1,4 +1,5 @@
 import Phaser from 'phaser'
+import timer from '../timer.js'
 
 export default class VictoryScene extends Phaser.Scene {
   constructor() {
@@ -9,6 +10,7 @@ export default class VictoryScene extends Phaser.Scene {
     this.cameras.main.setBackgroundColor(0x14291c)
 
     const { width, height } = this.scale
+    const total = timer.finish()
 
     this.add
       .text(width / 2, height * 0.3, '¡VICTORIA!', {
@@ -23,6 +25,14 @@ export default class VictoryScene extends Phaser.Scene {
         fontFamily: 'monospace',
         fontSize: '22px',
         color: '#d1fae5',
+      })
+      .setOrigin(0.5)
+
+    this.add
+      .text(width / 2, height * 0.51, `TIEMPO TOTAL: ${timer.format(total)}`, {
+        fontFamily: 'monospace',
+        fontSize: '26px',
+        color: '#fbbf24',
       })
       .setOrigin(0.5)
 

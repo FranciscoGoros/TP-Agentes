@@ -1,7 +1,7 @@
 import Phaser from 'phaser'
 
 const BOX_SIZE = 40
-const PUSH_SPEED = 90
+const PUSH_SPEED = 110
 const DRAG_X = 600
 const EDGE_PADDING = 36
 
@@ -44,4 +44,39 @@ export default class Box extends Phaser.GameObjects.Rectangle {
       this.body.setVelocityX(0)
     }
   }
+}
+
+export function resolveBoxPushing(boxes) {
+  let changed = true
+  let guard = 0
+  while (changed && guard++ < 50) {
+    changed = false
+    for (const box of boxes) {
+      const vx = box.body.velocity.x
+      if (Math.abs(vx) < 1) continue
+      const dir = vx > 0 ? 1 : -1
+
+      for (const other of boxes) {
+        if (other === box) continue
+
+        const a = box.getBounds()
+        const b = other.getBounds()
+        if (!Phaser.Geom.Rectangle.Overlaps(a, b)) continue
+
+        const approaching =
+          (dir > 0 && b.centerX > a.centerX) ||
+          (dir < 0 && b.centerX < a.centerX)
+        if (!approaching) continue
+
+        const overlapX =
+          Math.min(a.right, b.right) - Math.max(a.left, b.left)
+        if (overlapX <= 0) continue
+
+        other.x += dir * (overlapX + 1)
+        other.body.x = other.x - BOX_SIZE / 2
+        changed = true
+      }
+    }
+  }
+  return boxes
 }

@@ -1,8 +1,10 @@
 import Phaser from 'phaser'
 import Player from '../player.js'
-import Box from '../box.js'
+import Box, { resolveBoxPushing } from '../box.js'
 import DoorSystem from '../door.js'
 import SpikeSystem from '../spikes.js'
+import timer from '../timer.js'
+import addRestartButton from '../hud.js'
 
 const PLATFORM_HEIGHT = 32
 
@@ -13,6 +15,7 @@ const LEDGES = [
   { x: 650, y: 646, w: 200 },
   { x: 110, y: 746, w: 150 },
   { x: 550, y: 836, w: 180 },
+  { x: 400, y: 700, w: 200 },
 ]
 
 const FLOOR = { x: 420, y: 944, w: 840 }
@@ -38,7 +41,16 @@ export default class Level3Scene extends Phaser.Scene {
 
   create() {
     this.cameras.main.setBackgroundColor(0x1b1b22)
+    timer.startLevel('Level3')
     this.gameOverTriggered = false
+    this.timerText = this.add
+      .text(this.scale.width - 12, 12, '', {
+        fontFamily: 'monospace',
+        fontSize: '18px',
+        color: '#efdffc',
+      })
+      .setOrigin(1, 0)
+    addRestartButton(this)
 
     this.platforms = []
     for (const { x, y, w } of LEDGES) {
@@ -57,6 +69,7 @@ export default class Level3Scene extends Phaser.Scene {
     this.physics.add.collider(this.player, this.platforms)
     this.physics.add.collider(this.boxes, this.platforms)
     this.physics.add.collider(this.player, this.boxes)
+    this.physics.add.collider(this.boxes, this.boxes)
 
     this.spikes = new SpikeSystem(this, {
       strips: SPIKE_STRIPS,
@@ -93,8 +106,10 @@ export default class Level3Scene extends Phaser.Scene {
 
   update() {
     if (this.gameOverTriggered) return
+    this.timerText.setText(timer.format(timer.levelElapsed()))
     this.player.update(this.cursors)
     this.boxes.forEach((box) => box.update(this.player, this.scale.width))
+    resolveBoxPushing(this.boxes)
     this.door.update(this.player)
   }
 }
