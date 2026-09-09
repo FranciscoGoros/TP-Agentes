@@ -3,45 +3,56 @@ import Player from '../player.js'
 import Box, { resolveBoxPushing } from '../box.js'
 import DoorSystem from '../door.js'
 import SpikeSystem from '../spikes.js'
+import LaserSystem from '../lasers.js'
 import timer from '../timer.js'
 import addRestartButton from '../hud.js'
 
 const PLATFORM_HEIGHT = 32
 
 const LEDGES = [
-  { x: 110, y: 406, w: 200 },
-  { x: 695, y: 496, w: 190 },
-  { x: 180, y: 556, w: 180 },
-  { x: 650, y: 646, w: 200 },
-  { x: 110, y: 746, w: 150 },
-  { x: 550, y: 836, w: 180 },
-  { x: 400, y: 700, w: 200 },
+  { x: 120, y: 386, w: 200 },
+  { x: 330, y: 476, w: 180 },
+  { x: 540, y: 566, w: 180 },
+  { x: 730, y: 656, w: 180 },
+  { x: 600, y: 756, w: 200 },
 ]
 
 const FLOOR = { x: 420, y: 944, w: 840 }
 
 const ZONES = [
-  { x: 180, y: 534, w: 56, h: 12, colorId: 'yellow' },
-  { x: 730, y: 922, w: 56, h: 12, colorId: 'red' },
-  { x: 520, y: 922, w: 56, h: 12, colorId: 'purple' },
+  { x: 570, y: 544, w: 56, h: 12, colorId: 'yellow' },
+  { x: 730, y: 634, w: 56, h: 12, colorId: 'red' },
+  { x: 280, y: 922, w: 56, h: 12, colorId: 'purple' },
+  { x: 500, y: 922, w: 56, h: 12, colorId: 'green' },
+  { x: 600, y: 734, w: 56, h: 12, colorId: 'cyan' },
 ]
 
-const DOOR = { x: 790, y: 880, w: 48, h: 96 }
+const DOOR = { x: 775, y: 880, w: 48, h: 96 }
 
 const SPIKE_STRIPS = [
-  { x: 650, y: 630, w: 110, count: 4 },
-  { x: 110, y: 730, w: 90, count: 3 },
-  { x: 550, y: 820, w: 100, count: 4 },
+  { x: 405, y: 460, w: 26, count: 2 },
+  { x: 464, y: 550, w: 26, count: 2 },
+  { x: 789, y: 640, w: 60, count: 3 },
+  { x: 530, y: 740, w: 60, count: 3 },
 ]
 
-export default class Level3Scene extends Phaser.Scene {
+const LASER_BEAMS = [
+  { side: 'right', levelY: 420, length: 600, onMs: 1300, offMs: 800, phase: 0 },
+  { side: 'right', levelY: 510, length: 380, onMs: 1100, offMs: 900, phase: 400 },
+  { side: 'left', levelY: 510, length: 200, onMs: 1200, offMs: 1000, phase: 900 },
+  { side: 'right', levelY: 600, length: 170, onMs: 1400, offMs: 700, phase: 200 },
+  { side: 'right', levelY: 690, length: 170, onMs: 1100, offMs: 900, phase: 600 },
+  { side: 'left', levelY: 690, length: 220, onMs: 1300, offMs: 800, phase: 300 },
+]
+
+export default class Level5Scene extends Phaser.Scene {
   constructor() {
-    super('Level3')
+    super('Level5')
   }
 
   create() {
     this.cameras.main.setBackgroundColor(0x1b1b22)
-    timer.startLevel('Level3')
+    timer.startLevel('Level5')
     this.gameOverTriggered = false
     this.timerText = this.add
       .text(this.scale.width - 12, 12, '', {
@@ -58,11 +69,13 @@ export default class Level3Scene extends Phaser.Scene {
     }
     this.buildPlatform(FLOOR.x, FLOOR.y, FLOOR.w, 0x27272a, 0x3f3f46)
 
-    this.player = new Player(this, 125, 374)
+    this.player = new Player(this, 125, 354)
     this.boxes = [
-      new Box(this, 60, 370, 'yellow'),
-      new Box(this, 190, 370, 'red'),
-      new Box(this, 695, 460, 'purple'),
+      new Box(this, 60, 350, 'yellow'),
+      new Box(this, 190, 350, 'red'),
+      new Box(this, 290, 440, 'purple'),
+      new Box(this, 370, 440, 'green'),
+      new Box(this, 500, 530, 'cyan'),
     ]
     this.cursors = this.input.keyboard.createCursorKeys()
 
@@ -71,17 +84,24 @@ export default class Level3Scene extends Phaser.Scene {
     this.physics.add.collider(this.player, this.boxes)
     this.physics.add.collider(this.boxes, this.boxes)
 
+    const onHit = () => this.onHazardHit()
+
     this.spikes = new SpikeSystem(this, {
       strips: SPIKE_STRIPS,
       player: this.player,
-      onHit: () => this.onSpikeHit(),
+      onHit,
+    })
+    this.lasers = new LaserSystem(this, {
+      beams: LASER_BEAMS,
+      player: this.player,
+      onHit,
     })
 
     this.door = new DoorSystem(this, {
       boxes: this.boxes,
       zones: ZONES,
       door: DOOR,
-      targetScene: 'Level4',
+      targetScene: 'Victory',
     })
   }
 
@@ -92,7 +112,7 @@ export default class Level3Scene extends Phaser.Scene {
     this.platforms.push(platform)
   }
 
-  onSpikeHit() {
+  onHazardHit() {
     if (this.gameOverTriggered) return
     this.gameOverTriggered = true
 
@@ -100,13 +120,14 @@ export default class Level3Scene extends Phaser.Scene {
     this.player.setVisible(false)
     this.cameras.main.fadeOut(400, 0, 0, 0)
     this.cameras.main.once(Phaser.Cameras.Scene2D.Events.FADE_OUT_COMPLETE, () => {
-      this.scene.start('GameOver', { level: 'Level3' })
+      this.scene.start('GameOver', { level: 'Level5' })
     })
   }
 
-  update() {
+  update(time) {
     if (this.gameOverTriggered) return
     this.timerText.setText(timer.format(timer.levelElapsed()))
+    this.lasers.update(time)
     this.player.update(this.cursors)
     this.boxes.forEach((box) => box.update(this.player, this.scale.width))
     resolveBoxPushing(this.boxes)

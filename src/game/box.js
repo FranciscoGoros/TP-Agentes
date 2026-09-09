@@ -9,6 +9,8 @@ export const BOX_COLORS = {
   yellow: { fill: 0xfacc15, stroke: 0xa16207 },
   red: { fill: 0xef4444, stroke: 0x991b1b },
   purple: { fill: 0xa855f7, stroke: 0x6b21a8 },
+  green: { fill: 0x22c55e, stroke: 0x15803d },
+  cyan: { fill: 0x22d3ee, stroke: 0x0e7490 },
 }
 
 export default class Box extends Phaser.GameObjects.Rectangle {

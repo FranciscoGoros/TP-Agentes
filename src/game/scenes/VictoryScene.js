@@ -21,7 +21,7 @@ export default class VictoryScene extends Phaser.Scene {
       .setOrigin(0.5)
 
     this.add
-      .text(width / 2, height * 0.42, 'Completaste los 3 niveles', {
+      .text(width / 2, height * 0.42, 'Completaste los 5 niveles', {
         fontFamily: 'monospace',
         fontSize: '22px',
         color: '#d1fae5',
