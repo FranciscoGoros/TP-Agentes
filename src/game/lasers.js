@@ -1,6 +1,6 @@
 import Phaser from 'phaser'
 
-const WARN_MS = 400
+const WARN_MS = 600
 const BEAM_WIDTH = 10
 const BEAM_ON = 0xff4d4d
 const BEAM_WARN = 0xff8800
